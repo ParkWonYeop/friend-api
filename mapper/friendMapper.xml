@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="friendData">
+    <select id="getFriendList">
+        SELECT
+            *
+        From
+            user_friend_list
+        WHERE
+            requester = #{userIdx}
+        OR
+            responser = #{userIdx}
+    </select>
+    <select id="getUserIdx">
+        SELECT
+            idx
+        From
+            user_information
+        WHERE
+            user_email = #{userEmail}
+    </select>
+    <select id="checkFriendRequest">
+        SELECT
+            *
+        From
+            user_friend_list
+        WHERE
+            responser = #{requesterIdx}
+        AND
+            requester = #{responserIdx}
+    </select>
+    <select id="getBlockList">
+        SELECT
+            *
+        From
+            user_block_list
+        WHERE
+            requester = #{userIdx}
+    </select>
+    <insert id="addUserData">
+        INSERT INTO
+            user_information(user_email,user_name,user_age,user_gender,user_phone_number)
+        VALUES
+            (#{userEmail},#{userName},#{userAge},#{userGender},#{userPhoneNumber})
+    </insert>
+    <delete id="deleteFriend">
+        DELETE FROM
+            user_friend_list
+        WHERE
+            requester = #{requesterIdx}
+        AND
+            responser = #{responserIdx}
+    </delete>
+    <update id="acceptFriend">
+        UPDATE
+            user_friend_list
+        SET
+            status = 1
+        WHERE
+            requester = #{requesterIdx}
+        AND
+            responser = #{responserIdx}
+    </update>
+    <insert id="blockFriend">
+        INSERT INTO
+            user_block_list(requester,responser)
+        VALUES
+            (#{requesterIdx},#{responserIdx})
+    </insert>
+    <insert id="requestFriend">
+        INSERT INTO
+            user_friend_list(requester,responser,status)
+        VALUES
+            (#{requesterIdx},#{responserIdx},#{status})
+    </insert>
+</mapper>
