@@ -86,6 +86,10 @@ class FriendService{
         logger.info('requestFriend success');
         return this.#response.send("success");
     }
+
+    async acceptFriend(){
+        
+    }
 }
 
 module.exports = {FriendService};
