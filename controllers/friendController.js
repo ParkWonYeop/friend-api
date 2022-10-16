@@ -20,6 +20,31 @@ class FriendController{
         const friendService = new FriendService(this.#request,this.#response);
         await friendService.requestFriend();
     }
+
+    async acceptFriend(){
+        const friendService = new FriendService(this.#request,this.#response);
+        await friendService.acceptFriend();
+    }
+
+    async refuseFriend(){
+        const friendService = new FriendService(this.#request,this.#response);
+        await friendService.refuseFriend();
+    }
+
+    async referenceFriendList(){
+        const friendService = new FriendService(this.#request,this.#response);
+        await friendService.referenceFriendList();
+    }
+
+    async referenceBlockList(){
+        const friendService = new FriendService(this.#request,this.#response);
+        await friendService.referenceBlockList();
+    }
+
+    async blockFriend(){
+        const friendService = new FriendService(this.#request,this.#response);
+        await friendService.blockFriend();
+    }
 }
 
 module.exports = {FriendController}

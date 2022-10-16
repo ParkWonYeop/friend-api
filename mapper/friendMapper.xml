@@ -11,6 +11,14 @@
         OR
             responser = #{userIdx}
     </select>
+    <select id="getUserInformation">
+        SELECT
+            *
+        From
+            user_infomation
+        WHERE
+            idx = #{userIdx}
+    </select>
     <select id="getUserIdx">
         SELECT
             idx
@@ -19,11 +27,29 @@
         WHERE
             user_email = #{userEmail}
     </select>
+    <select id="getUserEmail">
+        SELECT
+            user_email
+        From
+            user_information
+        WHERE
+            idx = #{userIdx}
+    </select>
     <select id="checkFriendRequest">
         SELECT
             *
         From
             user_friend_list
+        WHERE
+            responser = #{requesterIdx}
+        AND
+            requester = #{responserIdx}
+    </select>
+    <select id="checkFriendRequest">
+        SELECT
+            *
+        From
+            user_block_list
         WHERE
             responser = #{requesterIdx}
         AND
@@ -71,6 +97,6 @@
         INSERT INTO
             user_friend_list(requester,responser,status)
         VALUES
-            (#{requesterIdx},#{responserIdx},#{status})
+            (#{requesterIdx},#{responserIdx},0)
     </insert>
 </mapper>

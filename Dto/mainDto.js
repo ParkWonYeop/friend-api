@@ -41,4 +41,38 @@ class Request{
     }
 }
 
-module.exports = {UserData,Request: Request}
+class friendList{
+    #friendList;
+
+    constructor(){
+        this.#friendList = []
+    }
+
+    async sortList(result,userIdx){
+        for (const friend of result){
+            const friendInformation = {
+                user : friend.requester,
+                friend : friend.responser,
+                status : friend.status
+            }
+            if(friend.requester !== userIdx){
+                if(friend.status === 0){
+                    friendInformation.status = 2;
+                }
+                friendInformation.user = friend.responser;
+                friendInformation.friend = friend.requester;
+            }
+            this.#friendList.push(friendInformation);
+        }
+    }
+
+    async getFriendList(){
+        return this.#friendList;
+    }
+}
+
+module.exports = {
+    UserData,
+    Request,
+    friendList
+}

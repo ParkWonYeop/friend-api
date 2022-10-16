@@ -62,7 +62,20 @@ class MainDao{
                     resolve(errorCode.dbError);
                 }
                 if(result.length === 0) resolve(errorCode.noResult);
-                resolve(result[0].idx);
+                else resolve(result[0].idx);
+            })
+        })
+    }
+
+    async getUserEmail(param){
+        this.#query = mybatisMapper.getStatement(`friendData`, `getUserEmail`, param, this.#format);
+        return new Promise((resolve) => {
+            this.#connection.query(this.#query, function(error,result){
+                if(error){
+                    resolve(errorCode.dbError);
+                }
+                if(result.length === 0) resolve(errorCode.noResult);
+                resolve(result[0].user_email);
             })
         })
     }
@@ -75,7 +88,20 @@ class MainDao{
                     resolve(errorCode.dbError);
                 }
                 if(result.length === 0) resolve(errorCode.noResult);
-                resolve(result[0].status);
+                else resolve(result[0].status);
+            })
+        })
+    }
+
+    async checkBlockFriend(param){
+        this.#query = mybatisMapper.getStatement(`friendData`, `checkFriendRequest`, param, this.#format);
+        return new Promise((resolve) => {
+            this.#connection.query(this.#query, function(error,result){
+                if(error){
+                    resolve(errorCode.dbError);
+                }
+                if(result.length === 0) resolve(errorCode.noResult);
+                else resolve(errorCode.noError);
             })
         })
     }
@@ -88,6 +114,20 @@ class MainDao{
                 if(error){
                     console.log(error)
                     resolve(errorCode.dbError);
+                }
+                resolve(errorCode.noError);
+            })
+        })
+    }
+
+    //친구요청
+    async blockFriend(param){
+        this.#query = mybatisMapper.getStatement(`friendData`, `blockFriend`, param, this.#format);
+        return new Promise((resolve) => {
+            this.#connection.query(this.#query, function(error){
+                if(error){
+                    resolve(errorCode.dbError);
+                    console.log(error);
                 }
                 resolve(errorCode.noError);
             })
@@ -113,6 +153,19 @@ class MainDao{
             this.#connection.query(this.#query, function(error){
                 if(error){
                     resolve(errorCode.dbError);
+                }
+                resolve(errorCode.noError);
+            })
+        })
+    }
+
+    async deleteFriend(param){
+        this.#query = mybatisMapper.getStatement(`friendData`, `deleteFriend`, param, this.#format);
+        return new Promise((resolve) => {
+            this.#connection.query(this.#query, function(error){
+                if(error){
+                    resolve(errorCode.dbError);
+                    console.log(error);
                 }
                 resolve(errorCode.noError);
             })
