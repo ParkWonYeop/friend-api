@@ -41,7 +41,7 @@ class Request{
     }
 }
 
-class friendList{
+class FriendList{
     #friendList;
 
     constructor(){
@@ -71,8 +71,32 @@ class friendList{
     }
 }
 
+class BlockList{
+    #blockList;
+
+    constructor(){
+        this.#blockList = []
+    }
+
+    async sortList(result){
+        for (const block of result){
+            const blockInformation = {
+                user : block.requester,
+                blockUser : block.responser,
+            }
+            this.#blockList.push(blockInformation);
+        }
+    }
+
+    async getBlockList(){
+        return this.#blockList;
+    }
+}
+
+
 module.exports = {
     UserData,
     Request,
-    friendList
+    FriendList,
+    BlockList
 }

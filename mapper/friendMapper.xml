@@ -77,6 +77,14 @@
         AND
             responser = #{responserIdx}
     </delete>
+    <delete id="deleteBlock">
+        DELETE FROM
+            user_block_list
+        WHERE
+            requester = #{requesterIdx}
+        AND
+            responser = #{responserIdx}
+    </delete>
     <update id="acceptFriend">
         UPDATE
             user_friend_list

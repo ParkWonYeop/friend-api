@@ -171,6 +171,20 @@ class MainDao{
             })
         })
     }
+
+    async deleteBlock(param){
+        this.#query = mybatisMapper.getStatement(`friendData`, `deleteBlock`, param, this.#format);
+        return new Promise((resolve) => {
+            this.#connection.query(this.#query, function(error){
+                if(error){
+                    resolve(errorCode.dbError);
+                    console.log(error);
+                }
+                resolve(errorCode.noError);
+            })
+        })
+    }
 }
+
 
 module.exports = {MainDao}

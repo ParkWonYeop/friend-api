@@ -37,4 +37,9 @@ friendRouter.delete('/',function(request,response){
     friendController.refuseFriend();
 });
 
+friendRouter.delete('/block',function(request,response){
+    const friendController = new FriendController(request,response);
+    friendController.deleteBlock();
+});
+
 module.exports = friendRouter;

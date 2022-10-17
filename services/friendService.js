@@ -161,7 +161,7 @@ class FriendService{
 
         const idxFriendList = await mainDao.getFriendList({userIdx : userIdx});
 
-        const friendListDto = new mainDto.friendList();
+        const friendListDto = new mainDto.FriendList();
         await friendListDto.sortList(idxFriendList,userIdx);
         const friendList = await friendListDto.getFriendList();
 
@@ -245,6 +245,70 @@ class FriendService{
 
         logger.info("blockFreind success");
         return this.#response.send("success");
+    }
+
+    async deleteBlock(){
+        const requesterEmail = this.#request.body.requesterEmail;
+        const responserEmail = this.#request.body.responserEmail;
+
+        const mainDao = new MainDao();
+
+        const requesterIdx = await mainDao.getUserIdx({userEmail : requesterEmail});
+        const responserIdx = await mainDao.getUserIdx({userEmail : responserEmail});
+
+        const requestData = new mainDto.Request(requesterIdx,responserIdx, friendStatus.accept);
+
+        const getRequestData = await requestData.getRequestInformation();
+
+        const error = await mainDao.deleteBlock(getRequestData);
+
+        if (error === errorCode.dbError){
+            logger.error("deleteBlock dbError")
+            return this.#response.sendStatus(500);
+        }
+
+        logger.info("deleteBlock success");
+        return this.#response.send("success");
+    }
+
+    async referenceBlockList(){
+        const userEmail = this.#request.params.email;
+
+        const mainDao = new MainDao();
+        const userIdx = await mainDao.getUserIdx({userEmail : userEmail})
+
+        if(userIdx === errorCode.noResult){
+            logger.error("referenceBlockList wrong Email");
+            return this.#response.send("wrong Email")
+        }
+        if(userIdx === errorCode.dbError){
+            logger.error("referenceBlockList gerUserIdx dberror");
+            return this.#response.sendStatus(500);
+        }
+
+        const idxBlockList = await mainDao.getBlockList({userIdx : userIdx});
+
+        const BlockListDto = new mainDto.BlockList();
+        await BlockListDto.sortList(idxBlockList);
+        const blockList = await BlockListDto.getBlockList();
+
+        let idx = 0;
+
+        for (let block of blockList){
+            console.log(block.friend)
+            const blockEmail = await mainDao.getUserEmail({userIdx : block.blockUser});
+            if(blockEmail === errorCode.dbError){
+                logger.error("referenceBlockList getBlockEmail dberror");
+                return this.#response.sendStatus(500);
+            }
+            blockList[idx].user = userEmail;
+            blockList[idx].blockUser = blockEmail;
+
+            idx ++;
+        }
+
+        logger.info("referenceBlockList success")
+        return this.#response.send(blockList);
     }
 }
 

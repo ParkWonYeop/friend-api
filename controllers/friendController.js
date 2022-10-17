@@ -45,6 +45,11 @@ class FriendController{
         const friendService = new FriendService(this.#request,this.#response);
         await friendService.blockFriend();
     }
+
+    async deleteBlock(){
+        const friendService = new FriendService(this.#request,this.#response);
+        await friendService.deleteBlock();
+    }
 }
 
 module.exports = {FriendController}
