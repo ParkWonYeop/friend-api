@@ -5,106 +5,127 @@
         SELECT
             *
         From
-            user_friend_list
+            friend
         WHERE
-            requester = #{userIdx}
+            accepter = #{userIdx}
         OR
-            responser = #{userIdx}
+            accepter = #{userIdx}
     </select>
     <select id="getUserInformation">
         SELECT
             *
         From
-            user_infomation
+            user
         WHERE
-            idx = #{userIdx}
+            id = #{userIdx}
     </select>
     <select id="getUserIdx">
         SELECT
-            idx
+            id
         From
-            user_information
+            user
         WHERE
-            user_email = #{userEmail}
+            email = #{userEmail}
+    </select>
+    <select id="login">
+        SELECT
+            is_deleted
+        From
+            user
+        WHERE
+            email = #{userEmail}
     </select>
     <select id="getUserEmail">
         SELECT
-            user_email
+            email
         From
-            user_information
+            user
         WHERE
-            idx = #{userIdx}
+            id = #{userIdx}
     </select>
     <select id="checkFriendRequest">
         SELECT
             *
         From
-            user_friend_list
+            friend
         WHERE
-            responser = #{requesterIdx}
+            (responser = #{requesterIdx}
         AND
-            requester = #{responserIdx}
+            accepter = #{responserIdx})
+        OR
+            (responser = #{responserIdx}
+        AND
+            accepter = #{requesterIdx})
     </select>
     <select id="checkFriendRequest">
         SELECT
             *
         From
-            user_block_list
+            block
         WHERE
             responser = #{requesterIdx}
         AND
-            requester = #{responserIdx}
+            blocked_user = #{responserIdx}
     </select>
     <select id="getBlockList">
         SELECT
             *
         From
-            user_block_list
+            block
         WHERE
-            requester = #{userIdx}
+            blocked_user = #{userIdx}
     </select>
     <insert id="addUserData">
         INSERT INTO
-            user_information(user_email,user_name,user_age,user_gender,user_phone_number)
+            user(email,name,age,gender,phone_number)
         VALUES
             (#{userEmail},#{userName},#{userAge},#{userGender},#{userPhoneNumber})
     </insert>
     <delete id="deleteFriend">
         DELETE FROM
-            user_friend_list
+            friend
         WHERE
-            requester = #{requesterIdx}
+            accepter = #{requesterIdx}
         AND
             responser = #{responserIdx}
     </delete>
     <delete id="deleteBlock">
         DELETE FROM
-            user_block_list
+            block
         WHERE
-            requester = #{requesterIdx}
+            accepter = #{requesterIdx}
         AND
             responser = #{responserIdx}
     </delete>
     <update id="acceptFriend">
         UPDATE
-            user_friend_list
+            friend
         SET
             status = 1
         WHERE
-            requester = #{requesterIdx}
+            accepter = #{requesterIdx}
         AND
             responser = #{responserIdx}
     </update>
     <insert id="blockFriend">
         INSERT INTO
-            user_block_list(requester,responser)
+            block(accepter,responser)
         VALUES
             (#{requesterIdx},#{responserIdx})
     </insert>
     <insert id="requestFriend">
         INSERT INTO
-            user_friend_list(requester,responser,status)
+            friend(accepter,responser,status)
         VALUES
             (#{requesterIdx},#{responserIdx},0)
     </insert>
+    <delete id="deleteUser">
+        UPDATE
+            user
+        SET
+            is_deleted = 1,
+            deleted_at = CURRENT_TIMESTAMP
+        WHERE
+            email = #{userEmail}
+    </delete>
 </mapper>

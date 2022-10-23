@@ -11,9 +11,9 @@ class FriendController{
     }
 
     //유저정보 요청
-    async addUserData(){
+    async signup(){
         const friendService = new FriendService(this.#request,this.#response);
-        await friendService.addUserData();
+        await friendService.signup();
     }
 
     async requestFriend(){
@@ -26,22 +26,22 @@ class FriendController{
         await friendService.acceptFriend();
     }
 
-    async refuseFriend(){
+    async deleteFriend(){
         const friendService = new FriendService(this.#request,this.#response);
-        await friendService.refuseFriend();
+        await friendService.deleteFriend();
     }
 
-    async referenceFriendList(){
+    async friendList(){
         const friendService = new FriendService(this.#request,this.#response);
-        await friendService.referenceFriendList();
+        await friendService.friendList();
     }
 
-    async referenceBlockList(){
+    async blockList(){
         const friendService = new FriendService(this.#request,this.#response);
-        await friendService.referenceBlockList();
+        await friendService.blockList();
     }
 
-    async blockFriend(){
+    async block(){
         const friendService = new FriendService(this.#request,this.#response);
         await friendService.blockFriend();
     }

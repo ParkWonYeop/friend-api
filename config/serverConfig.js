@@ -5,6 +5,7 @@ const session = require('express-session');
 const MemoryStore = require('memorystore')(session);
 const cors = require('cors');
 const friendRouter = require(`../routers/friendRouter`);
+const userRouter = require(`../routers/userRouter`)
 const logger = require(`./winston`);
 
 //서버를 실행시킴//
@@ -19,6 +20,7 @@ const setApp = function (app) {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: true}));
   app.use('/friend',friendRouter);
+  app.use('/user',userRouter);
 
   app.use(session({
     secret : `housecleanparty`,

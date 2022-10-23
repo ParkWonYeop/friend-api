@@ -26,7 +26,7 @@ class MainDao{
     }
 
     //친구목록 가져오기
-    async getFriendList(param){
+    async friendList(param){
         this.#query = mybatisMapper.getStatement(`friendData`, `getFriendList`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error,result){
@@ -39,8 +39,26 @@ class MainDao{
         })
     }
 
+    async login(userDto){
+        const param = {
+            userEmail:await userDto.getEmail()
+        }
+
+        this.#query = mybatisMapper.getStatement(`friendData`, `login`, param, this.#format);
+        return new Promise((resolve) => {
+            this.#connection.query(this.#query, function(error,result){
+                if(error) userDto.setError(errorCode.dbError);
+                else{
+                    if(result.length === 0) userDto.setError(errorCode.noResult);
+                    else userDto.setError(result[0].is_deleted);
+                }
+                resolve(0);
+            })
+        })
+    }
+
     //차단목록 가져오기
-    async getBlockList(param){
+    async blockList(param){
         this.#query = mybatisMapper.getStatement(`friendData`, `getBlockList`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error,result){
@@ -67,7 +85,7 @@ class MainDao{
         })
     }
 
-    async getUserEmail(param){
+    async getEmail(param){
         this.#query = mybatisMapper.getStatement(`friendData`, `getUserEmail`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error,result){
@@ -93,7 +111,7 @@ class MainDao{
         })
     }
 
-    async checkBlockFriend(param){
+    async checkBlock(param){
         this.#query = mybatisMapper.getStatement(`friendData`, `checkFriendRequest`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error,result){
@@ -107,21 +125,29 @@ class MainDao{
     }
 
     //유저 데이터 추가
-    async addUserData(param){
+    async addUser(userDto){
+        const param = {
+            userEmail : await userDto.getEmail(),
+            userName : await userDto.getName(),
+            userGender : await userDto.getGender(),
+            userAge : await userDto.getAge(),
+            userPhoneNumber : await userDto.getPhoneNumber()
+        }
+
         this.#query = mybatisMapper.getStatement(`friendData`, `addUserData`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error){
-                if(error){
-                    console.log(error)
-                    resolve(errorCode.dbError);
+                if(error) userDto.setError(errorCode.dbError);
+                else{
+                    userDto.setError(errorCode.noError);
                 }
-                resolve(errorCode.noError);
+                resolve(0);
             })
         })
     }
 
     //친구요청
-    async blockFriend(param){
+    async block(param){
         this.#query = mybatisMapper.getStatement(`friendData`, `blockFriend`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error){
@@ -174,6 +200,19 @@ class MainDao{
 
     async deleteBlock(param){
         this.#query = mybatisMapper.getStatement(`friendData`, `deleteBlock`, param, this.#format);
+        return new Promise((resolve) => {
+            this.#connection.query(this.#query, function(error){
+                if(error){
+                    resolve(errorCode.dbError);
+                    console.log(error);
+                }
+                resolve(errorCode.noError);
+            })
+        })
+    }
+
+    async deleteUser(param){
+        this.#query = mybatisMapper.getStatement(`friendData`, `deleteUser`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error){
                 if(error){

@@ -4,22 +4,17 @@ const friendRouter = express.Router();
 
 friendRouter.get('/:email',function(request,response){
     const friendController = new FriendController(request,response);
-    friendController.referenceFriendList();
+    friendController.friendList();
 });
 
 friendRouter.get('/block/:email',function(request,response){
     const friendController = new FriendController(request,response);
-    friendController.referenceBlockList();
+    friendController.blockList();
 });
 
 friendRouter.post('/block',function(request,response){
     const friendController = new FriendController(request,response);
-    friendController.blockFriend();
-});
-
-friendRouter.post('/signup',function(request,response){
-    const friendController = new FriendController(request,response);
-    friendController.addUserData();
+    friendController.block();
 });
 
 friendRouter.post('/',function(request,response){
@@ -34,7 +29,7 @@ friendRouter.put('/',function(request,response){
 
 friendRouter.delete('/',function(request,response){
     const friendController = new FriendController(request,response);
-    friendController.refuseFriend();
+    friendController.deleteFriend();
 });
 
 friendRouter.delete('/block',function(request,response){

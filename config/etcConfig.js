@@ -1,7 +1,8 @@
 const errorCode = {
-    noError : 0,
-    dbError : -1,
-    noResult : -2
+    isDeleted : 1,
+    noError : -1,
+    dbError : -2,
+    noResult : -3
 }
 
 const maxLength = {
