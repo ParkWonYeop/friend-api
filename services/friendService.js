@@ -2,7 +2,6 @@ const {MainDao} = require(`../Dao/mainDao`);
 const mainDto = require(`../Dto/mainDto`)
 const logger = require(`../config/winston`);
 const {friendStatus,errorCode} = require(`../config/etcConfig`);
-const { check } = require("prettier");
 
 class FriendService{
     #request;
@@ -14,7 +13,7 @@ class FriendService{
         this.#response = response;
     }
 
-    async addUserData(){
+    async signup(){
         const userEmail = this.#request.body.userEmail;
         const userName = this.#request.body.userName;
         const userAge = this.#request.body.userAge;
@@ -26,7 +25,7 @@ class FriendService{
 
         const getUserData = await userData.getUserData();
 
-        const error = await mainDao.addUserData(getUserData);
+        const error = await mainDao.addUser(getUserData);
         mainDao.disconnectDatabase();
 
         if(error === errorCode.dbError){
@@ -120,7 +119,7 @@ class FriendService{
         return this.#response.send("success");
     }
 
-    async refuseFriend(){
+    async deleteFriend(){
         const requesterEmail = this.#request.body.requesterEmail;
         const responserEmail = this.#request.body.responserEmail;
 
@@ -144,7 +143,7 @@ class FriendService{
         return this.#response.send("success");
     }
 
-    async referenceFriendList(){
+    async friendList(){
         const userEmail = this.#request.params.email;
 
         const mainDao = new MainDao();
@@ -159,7 +158,7 @@ class FriendService{
             return this.#response.sendStatus(500);
         }
 
-        const idxFriendList = await mainDao.getFriendList({userIdx : userIdx});
+        const idxFriendList = await mainDao.friendList({userIdx : userIdx});
 
         const friendListDto = new mainDto.FriendList();
         await friendListDto.sortList(idxFriendList,userIdx);
@@ -171,7 +170,7 @@ class FriendService{
 
         for (let friend of friendList){
             console.log(friend.friend)
-            const friendEmail = await mainDao.getUserEmail({userIdx : friend.friend});
+            const friendEmail = await mainDao.getEmail({userIdx : friend.friend});
             if(friendEmail === errorCode.dbError){
                 logger.error("referenceFriendList getFriendEmail dberror");
                 return this.#response.sendStatus(500);
@@ -201,7 +200,7 @@ class FriendService{
         const getRequestData = await requestData.getRequestInformation();
         const getRequestData2 = await requestData2.getRequestInformation();
 
-        const checkBlockFriend = await mainDao.checkBlockFriend(getRequestData2);
+        const checkBlockFriend = await mainDao.checkBlock(getRequestData2);
 
         if(checkBlockFriend === errorCode.dbError){
             logger.error("blockFriend checkBlockFriend dbError");
@@ -236,7 +235,7 @@ class FriendService{
             }
         }
 
-        const error = await mainDao.blockFriend(getRequestData);
+        const error = await mainDao.block(getRequestData);
 
         if (error === errorCode.dbError){
             logger.error("blockFriend dbError")
@@ -271,7 +270,7 @@ class FriendService{
         return this.#response.send("success");
     }
 
-    async referenceBlockList(){
+    async blockList(){
         const userEmail = this.#request.params.email;
 
         const mainDao = new MainDao();
@@ -286,7 +285,7 @@ class FriendService{
             return this.#response.sendStatus(500);
         }
 
-        const idxBlockList = await mainDao.getBlockList({userIdx : userIdx});
+        const idxBlockList = await mainDao.blockList({userIdx : userIdx});
 
         const BlockListDto = new mainDto.BlockList();
         await BlockListDto.sortList(idxBlockList);
@@ -296,7 +295,7 @@ class FriendService{
 
         for (let block of blockList){
             console.log(block.friend)
-            const blockEmail = await mainDao.getUserEmail({userIdx : block.blockUser});
+            const blockEmail = await mainDao.getEmail({userIdx : block.blockUser});
             if(blockEmail === errorCode.dbError){
                 logger.error("referenceBlockList getBlockEmail dberror");
                 return this.#response.sendStatus(500);
@@ -309,6 +308,21 @@ class FriendService{
 
         logger.info("referenceBlockList success")
         return this.#response.send(blockList);
+    }
+
+    async deleteUser(){
+        const userEmail = this.#request.body.email;
+
+        const mainDao = new MainDao();
+        const error = mainDao.deleteUser({email:userEmail});
+
+        if(error === errorCode.dbError){
+            logger.error("deleteUser dberror");
+            return this.#response.sendStatus(500);
+        }
+
+        logger.info("deleteUser success")
+        return this.#response.send("success");
     }
 }
 
