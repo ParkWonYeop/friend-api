@@ -2,12 +2,12 @@ const express = require('express');
 const {FriendController} = require(`../controllers/friendController`)
 const friendRouter = express.Router();
 
-friendRouter.get('/:email',function(request,response){
+friendRouter.get('/:requester',function(request,response){
     const friendController = new FriendController(request,response);
     friendController.friendList();
 });
 
-friendRouter.get('/block/:email',function(request,response){
+friendRouter.get('/block/:requester',function(request,response){
     const friendController = new FriendController(request,response);
     friendController.blockList();
 });

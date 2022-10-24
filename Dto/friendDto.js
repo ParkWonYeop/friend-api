@@ -1,7 +1,7 @@
-class friendDto{
+class FriendDto{
     #requester
     #accepter
-    #errorCode
+    #status
 
     constructor(body){
         this.#requester = body.requester;
@@ -16,11 +16,11 @@ class friendDto{
         this.#accepter = accepter;
     }
 
-    setErrorCode(errorCode){
-        this.#errorCode = errorCode;
+    setStatus(status){
+        this.#status = status;
     }
 
-    async getRequster(){
+    async getRequester(){
         return this.#requester;
     }
 
@@ -28,7 +28,10 @@ class friendDto{
         return this.#accepter;
     }
 
-    async getErrorCode(){
-        return this.#errorCode;
+    async getStatus(){
+        return this.#status;
     }
+
 }
+
+module.exports = {FriendDto}

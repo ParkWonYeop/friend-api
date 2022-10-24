@@ -26,15 +26,18 @@ class MainDao{
     }
 
     //친구목록 가져오기
-    async friendList(param){
+    async friendList(friendDto){
+        const param = {
+            requester : await friendDto.getRequester()
+        }
         this.#query = mybatisMapper.getStatement(`friendData`, `getFriendList`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error){
-                    resolve(errorCode.dbError);
-                }
-                if(result.length === 0) resolve(errorCode.noResult);
-                resolve(result);
+                if(error) friendDto.setStatus(errorCode.dbError);
+                else if(result.length === 0) friendDto.setStatus(errorCode.noResult);
+                else friendDto.setStatus(result);
+
+                resolve(0)
             })
         })
     }
@@ -58,68 +61,116 @@ class MainDao{
     }
 
     //차단목록 가져오기
-    async blockList(param){
+    async blockList(friendDto){
+        const param = {
+            userId : await friendDto.getRequester()
+        }
         this.#query = mybatisMapper.getStatement(`friendData`, `getBlockList`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error){
-                    resolve(errorCode.dbError);
-                }
-                if(result.length === 0) resolve(errorCode.noResult);
-                resolve(result);
+                if(error) friendDto.setStatus(errorCode.dbError);
+                else if(result.length === 0) friendDto.setStatus(errorCode.noResult);
+                else friendDto.setStatus(result);
+
+                resolve(0)
             })
         })
     }
 
     //유저 인덱스 가져오기
-    async getUserIdx(param){
+    async getRequesterIdx(friendDto){
+        const param = {
+            userEmail : await friendDto.getRequester()
+        }
+
         this.#query = mybatisMapper.getStatement(`friendData`, `getUserIdx`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error){
-                    resolve(errorCode.dbError);
-                }
-                if(result.length === 0) resolve(errorCode.noResult);
-                else resolve(result[0].idx);
+                if(error)friendDto.setRequester(errorCode.dbError);
+                else if(result.length === 0) friendDto.setRequester(errorCode.noResult);
+                else friendDto.setRequester(result[0].id);
+                resolve(0);
             })
         })
     }
 
-    async getEmail(param){
+    async getAccepterIdx(friendDto){
+        const param = {
+            userEmail : await friendDto.getAccepter()
+        }
+
+        this.#query = mybatisMapper.getStatement(`friendData`, `getUserIdx`, param, this.#format);
+        return new Promise((resolve) => {
+            this.#connection.query(this.#query, function(error,result){
+                if(error)friendDto.setAccepter(errorCode.dbError);
+                else if(result.length === 0) friendDto.setAccepter(errorCode.noResult);
+                else friendDto.setAccepter(result[0].id);
+                resolve(0);
+            })
+        })
+    }
+
+    //유저 인덱스 가져오기
+    async getRequesterEmail(friendDto){
+        const param = {
+            userId : await friendDto.getRequester()
+        }
+
         this.#query = mybatisMapper.getStatement(`friendData`, `getUserEmail`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error){
-                    resolve(errorCode.dbError);
-                }
-                if(result.length === 0) resolve(errorCode.noResult);
-                resolve(result[0].user_email);
+                if(error)friendDto.setRequester(errorCode.dbError);
+                else if(result.length === 0) friendDto.setRequester(errorCode.noResult);
+                else friendDto.setRequester(result[0].email);
+                resolve(0);
             })
         })
     }
 
-    async checkFriendRequest(param){
-        this.#query = mybatisMapper.getStatement(`friendData`, `checkFriendRequest`, param, this.#format);
+    async getAccepterEmail(friendDto){
+        const param = {
+            userId : await friendDto.getAccepter()
+        }
+
+        this.#query = mybatisMapper.getStatement(`friendData`, `getUserEmail`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error){
-                    resolve(errorCode.dbError);
-                }
-                if(result.length === 0) resolve(errorCode.noResult);
-                else resolve(result[0].status);
+                if(error)friendDto.setAccepter(errorCode.dbError);
+                else if(result.length === 0) friendDto.setAccepter(errorCode.noResult);
+                else friendDto.setAccepter(result[0].email);
+                resolve(0);
             })
         })
     }
 
-    async checkBlock(param){
+    async checkFriendRequest(friendDto){
+        const param = {
+            requester : await friendDto.getRequester(),
+            accepter : await friendDto.getAccepter()
+        }
         this.#query = mybatisMapper.getStatement(`friendData`, `checkFriendRequest`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error){
-                    resolve(errorCode.dbError);
-                }
-                if(result.length === 0) resolve(errorCode.noResult);
-                else resolve(errorCode.noError);
+                if(error) friendDto.setStatus(errorCode.dbError);
+                if(result.length === 0) friendDto.setStatus(errorCode.noResult);
+                else friendDto.setStatus(result[0].status);
+                resolve(0)
+            })
+        })
+    }
+
+    async checkBlock(friendDto){
+        const param = {
+            requester : await friendDto.getRequester(),
+            blockedUser : await friendDto.getAccepter()
+        }
+        this.#query = mybatisMapper.getStatement(`friendData`, `checkBlock`, param, this.#format);
+        return new Promise((resolve) => {
+            this.#connection.query(this.#query, function(error,result){
+                if(error) friendDto.setStatus(errorCode.dbError);
+                if(result.length === 0) friendDto.setStatus(errorCode.noResult);
+                else friendDto.setStatus(errorCode.noError);
+                resolve(0)
             })
         })
     }
@@ -147,71 +198,85 @@ class MainDao{
     }
 
     //친구요청
-    async block(param){
+    async block(friendDto){
+        const param = {
+            requester : await friendDto.getRequester(),
+            blockedUser : await friendDto.getAccepter()
+        }
+
         this.#query = mybatisMapper.getStatement(`friendData`, `blockFriend`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error){
-                if(error){
-                    resolve(errorCode.dbError);
-                    console.log(error);
-                }
-                resolve(errorCode.noError);
+                if(error) friendDto.setStatus(errorCode.dbError);
+                else friendDto.setStatus(errorCode.noError);
+                resolve(0)
             })
         })
     }
 
     //친구요청
-    async requestFriend(param){
+    async requestFriend(friendDto){
+        const param = {
+            requester : await friendDto.getRequester(),
+            accepter : await friendDto.getAccepter()
+        }
         this.#query = mybatisMapper.getStatement(`friendData`, `requestFriend`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error){
-                if(error){
-                    resolve(errorCode.dbError);
-                }
-                resolve(errorCode.noError);
+                if(error) friendDto.setStatus(errorCode.dbError);
+                else friendDto.setStatus(errorCode.noError);
+                resolve(0)
             })
         })
     }
 
-    async acceptFriend(param){
+    async acceptFriend(friendDto){
+        const param = {
+            requester : await friendDto.getRequester(),
+            accepter : await friendDto.getAccepter()
+        }
+
         this.#query = mybatisMapper.getStatement(`friendData`, `acceptFriend`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error){
-                if(error){
-                    resolve(errorCode.dbError);
-                }
-                resolve(errorCode.noError);
+                if(error) friendDto.setStatus(errorCode.dbError);
+                else friendDto.setStatus(errorCode.noError);
+                resolve(0)
             })
         })
     }
 
-    async deleteFriend(param){
+    async deleteFriend(friendDto){
+        const param = {
+            requester : await friendDto.getRequester(),
+            accepter : await friendDto.getAccepter()
+        }
         this.#query = mybatisMapper.getStatement(`friendData`, `deleteFriend`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error){
-                if(error){
-                    resolve(errorCode.dbError);
-                    console.log(error);
-                }
-                resolve(errorCode.noError);
+                if(error) friendDto.setStatus(errorCode.dbError);
+                else friendDto.setStatus(errorCode.noError);
+                resolve(0)
             })
         })
     }
 
-    async deleteBlock(param){
+    async deleteBlock(friendDto){
+        const param = {
+            requester : await friendDto.getRequester(),
+            blockedUser : await friendDto.getAccepter()
+        }
         this.#query = mybatisMapper.getStatement(`friendData`, `deleteBlock`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error){
-                if(error){
-                    resolve(errorCode.dbError);
-                    console.log(error);
-                }
-                resolve(errorCode.noError);
+                if(error) friendDto.setStatus(errorCode.dbError);
+                else friendDto.setStatus(errorCode.noError);
+                resolve(0)
             })
         })
     }
 
-    async deleteUser(param){
+    async deleteUser(userDto){
         this.#query = mybatisMapper.getStatement(`friendData`, `deleteUser`, param, this.#format);
         return new Promise((resolve) => {
             this.#connection.query(this.#query, function(error){

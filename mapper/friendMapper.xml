@@ -7,9 +7,9 @@
         From
             friend
         WHERE
-            accepter = #{userIdx}
+            requester = #{requester}
         OR
-            accepter = #{userIdx}
+            accepter = #{requester}
     </select>
     <select id="getUserInformation">
         SELECT
@@ -41,7 +41,7 @@
         From
             user
         WHERE
-            id = #{userIdx}
+            id = #{userId}
     </select>
     <select id="checkFriendRequest">
         SELECT
@@ -49,23 +49,23 @@
         From
             friend
         WHERE
-            (responser = #{requesterIdx}
+            (requester= #{accepter}
         AND
-            accepter = #{responserIdx})
+            accepter = #{requester})
         OR
-            (responser = #{responserIdx}
+            (requester = #{requester}
         AND
-            accepter = #{requesterIdx})
+            accepter = #{accepter})
     </select>
-    <select id="checkFriendRequest">
+    <select id="checkBlock">
         SELECT
             *
         From
             block
         WHERE
-            responser = #{requesterIdx}
+            requester= #{requester}
         AND
-            blocked_user = #{responserIdx}
+            blocked_user = #{blockedUser}
     </select>
     <select id="getBlockList">
         SELECT
@@ -73,7 +73,7 @@
         From
             block
         WHERE
-            blocked_user = #{userIdx}
+            requester = #{userId}
     </select>
     <insert id="addUserData">
         INSERT INTO
@@ -85,17 +85,21 @@
         DELETE FROM
             friend
         WHERE
-            accepter = #{requesterIdx}
+            (requester = #{requester}
         AND
-            responser = #{responserIdx}
+            accepter = #{accepter})
+        OR
+            (accepter = #{requester}
+        AND
+            requester = #{accepter})
     </delete>
     <delete id="deleteBlock">
         DELETE FROM
             block
         WHERE
-            accepter = #{requesterIdx}
+            requester = #{requester}
         AND
-            responser = #{responserIdx}
+            blocked_user = #{blockedUser}
     </delete>
     <update id="acceptFriend">
         UPDATE
@@ -103,21 +107,21 @@
         SET
             status = 1
         WHERE
-            accepter = #{requesterIdx}
+            requester = #{accepter}
         AND
-            responser = #{responserIdx}
+            accepter = #{requester}
     </update>
     <insert id="blockFriend">
         INSERT INTO
-            block(accepter,responser)
+            block(requester,blocked_user)
         VALUES
-            (#{requesterIdx},#{responserIdx})
+            (#{requester},#{blockedUser})
     </insert>
     <insert id="requestFriend">
         INSERT INTO
-            friend(accepter,responser,status)
+            friend(requester,accepter,status)
         VALUES
-            (#{requesterIdx},#{responserIdx},0)
+            (#{requester},#{accepter},0)
     </insert>
     <delete id="deleteUser">
         UPDATE
