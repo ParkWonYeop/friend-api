@@ -31,13 +31,11 @@ class MainDao{
             requester : await friendDto.getRequester()
         }
         this.#query = mybatisMapper.getStatement(`friendData`, `getFriendList`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error) friendDto.setStatus(errorCode.dbError);
-                else if(result.length === 0) friendDto.setStatus(errorCode.noResult);
-                else friendDto.setStatus(result);
-
-                resolve(0)
+                if(error) {reject(errorCode.dbError);}
+                if(result.length === 0) {reject(errorCode.noResult);}
+                resolve(result);
             })
         })
     }
@@ -48,14 +46,26 @@ class MainDao{
         }
 
         this.#query = mybatisMapper.getStatement(`friendData`, `login`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error) userDto.setError(errorCode.dbError);
-                else{
-                    if(result.length === 0) userDto.setError(errorCode.noResult);
-                    else userDto.setError(result[0].is_deleted);
-                }
-                resolve(0);
+                if(error) {reject(errorCode.dbError);}
+                if(result.length === 0) {reject(errorCode.noResult);}
+                else {resolve(result[0].is_deleted);}
+            })
+        })
+    }
+
+    async checkAlreadySignup(userDto){
+        const param = {
+            userEmail:await userDto.getEmail()
+        }
+
+        this.#query = mybatisMapper.getStatement(`friendData`, `login`, param, this.#format);
+        return new Promise((resolve,reject) => {
+            this.#connection.query(this.#query, function(error,result){
+                if(error) {reject(errorCode.dbError);}
+                if(result.length === 0) {resolve(errorCode.noResult);}
+                else {reject(result[0].is_deleted);}
             })
         })
     }
@@ -66,13 +76,11 @@ class MainDao{
             userId : await friendDto.getRequester()
         }
         this.#query = mybatisMapper.getStatement(`friendData`, `getBlockList`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error) friendDto.setStatus(errorCode.dbError);
-                else if(result.length === 0) friendDto.setStatus(errorCode.noResult);
-                else friendDto.setStatus(result);
-
-                resolve(0)
+                if(error) {reject(errorCode.dbError);}
+                if(result.length === 0) {reject(errorCode.noResult);}
+                resolve(result);
             })
         })
     }
@@ -84,12 +92,11 @@ class MainDao{
         }
 
         this.#query = mybatisMapper.getStatement(`friendData`, `getUserIdx`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error)friendDto.setRequester(errorCode.dbError);
-                else if(result.length === 0) friendDto.setRequester(errorCode.noResult);
-                else friendDto.setRequester(result[0].id);
-                resolve(0);
+                if(error) {reject(errorCode.dbError);}
+                if(result.length === 0) {reject(errorCode.noResult);}
+                resolve(result[0].id);
             })
         })
     }
@@ -100,12 +107,11 @@ class MainDao{
         }
 
         this.#query = mybatisMapper.getStatement(`friendData`, `getUserIdx`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error)friendDto.setAccepter(errorCode.dbError);
-                else if(result.length === 0) friendDto.setAccepter(errorCode.noResult);
-                else friendDto.setAccepter(result[0].id);
-                resolve(0);
+                if(error) {reject(errorCode.dbError);}
+                if(result.length === 0) {reject(errorCode.noResult);}
+                resolve(result[0].id);
             })
         })
     }
@@ -117,12 +123,11 @@ class MainDao{
         }
 
         this.#query = mybatisMapper.getStatement(`friendData`, `getUserEmail`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error)friendDto.setRequester(errorCode.dbError);
-                else if(result.length === 0) friendDto.setRequester(errorCode.noResult);
-                else friendDto.setRequester(result[0].email);
-                resolve(0);
+                if(error) {reject(errorCode.dbError);}
+                if(result.length === 0) {reject(errorCode.noResult);}
+                resolve(result[0].email);
             })
         })
     }
@@ -133,12 +138,11 @@ class MainDao{
         }
 
         this.#query = mybatisMapper.getStatement(`friendData`, `getUserEmail`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error)friendDto.setAccepter(errorCode.dbError);
-                else if(result.length === 0) friendDto.setAccepter(errorCode.noResult);
-                else friendDto.setAccepter(result[0].email);
-                resolve(0);
+                if(error) {reject(errorCode.dbError);}
+                if(result.length === 0) {reject(errorCode.noResult);}
+                resolve(result[0].email);
             })
         })
     }
@@ -149,12 +153,11 @@ class MainDao{
             accepter : await friendDto.getAccepter()
         }
         this.#query = mybatisMapper.getStatement(`friendData`, `checkFriendRequest`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error) friendDto.setStatus(errorCode.dbError);
-                if(result.length === 0) friendDto.setStatus(errorCode.noResult);
-                else friendDto.setStatus(result[0].status);
-                resolve(0)
+                if(error) {reject(errorCode.dbError);}
+                else if(result.length === 0) {reject(errorCode.noResult);}
+                else {resolve(result[0].status);}
             })
         })
     }
@@ -165,12 +168,11 @@ class MainDao{
             blockedUser : await friendDto.getAccepter()
         }
         this.#query = mybatisMapper.getStatement(`friendData`, `checkBlock`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error,result){
-                if(error) friendDto.setStatus(errorCode.dbError);
-                if(result.length === 0) friendDto.setStatus(errorCode.noResult);
-                else friendDto.setStatus(errorCode.noError);
-                resolve(0)
+                if(error) {reject(errorCode.dbError)};
+                if(result.length === 0) {resolve(errorCode.noResult)};
+                reject(errorCode.noError);
             })
         })
     }
@@ -186,13 +188,10 @@ class MainDao{
         }
 
         this.#query = mybatisMapper.getStatement(`friendData`, `addUserData`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error){
-                if(error) userDto.setError(errorCode.dbError);
-                else{
-                    userDto.setError(errorCode.noError);
-                }
-                resolve(0);
+                if(error) {reject(errorCode.dbError)};
+                resolve(errorCode.noError);
             })
         })
     }
@@ -205,11 +204,10 @@ class MainDao{
         }
 
         this.#query = mybatisMapper.getStatement(`friendData`, `blockFriend`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error){
-                if(error) friendDto.setStatus(errorCode.dbError);
-                else friendDto.setStatus(errorCode.noError);
-                resolve(0)
+                if(error) {reject(errorCode.dbError)};
+                resolve(errorCode.noError);
             })
         })
     }
@@ -221,11 +219,10 @@ class MainDao{
             accepter : await friendDto.getAccepter()
         }
         this.#query = mybatisMapper.getStatement(`friendData`, `requestFriend`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error){
-                if(error) friendDto.setStatus(errorCode.dbError);
-                else friendDto.setStatus(errorCode.noError);
-                resolve(0)
+                if(error) {reject(errorCode.dbError)};
+                resolve(errorCode.noError);
             })
         })
     }
@@ -237,11 +234,10 @@ class MainDao{
         }
 
         this.#query = mybatisMapper.getStatement(`friendData`, `acceptFriend`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error){
-                if(error) friendDto.setStatus(errorCode.dbError);
-                else friendDto.setStatus(errorCode.noError);
-                resolve(0)
+                if(error) {reject(errorCode.dbError)};
+                resolve(errorCode.noError);
             })
         })
     }
@@ -252,11 +248,10 @@ class MainDao{
             accepter : await friendDto.getAccepter()
         }
         this.#query = mybatisMapper.getStatement(`friendData`, `deleteFriend`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error){
-                if(error) friendDto.setStatus(errorCode.dbError);
-                else friendDto.setStatus(errorCode.noError);
-                resolve(0)
+                if(error) {reject(errorCode.dbError)};
+                resolve(errorCode.noError);
             })
         })
     }
@@ -267,21 +262,20 @@ class MainDao{
             blockedUser : await friendDto.getAccepter()
         }
         this.#query = mybatisMapper.getStatement(`friendData`, `deleteBlock`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error){
-                if(error) friendDto.setStatus(errorCode.dbError);
-                else friendDto.setStatus(errorCode.noError);
-                resolve(0)
+                if(error) {reject(errorCode.dbError)};
+                resolve(errorCode.noError);
             })
         })
     }
 
     async deleteUser(userDto){
         this.#query = mybatisMapper.getStatement(`friendData`, `deleteUser`, param, this.#format);
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
             this.#connection.query(this.#query, function(error){
                 if(error){
-                    resolve(errorCode.dbError);
+                    reject(errorCode.dbError);
                     console.log(error);
                 }
                 resolve(errorCode.noError);

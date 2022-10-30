@@ -1,6 +1,5 @@
-# friend-api
+2022.10.24
 
-2022.10.17
-
-1. DTO 개념을 다시 숙지하고, 블로그 포스팅 후 리팩토링
-2. 퀴즈 with. Nodejs event loop
+1. resolve, reject 를 적극 활용하는 방법으로 리팩토링
+   1. resolve엔 처리 결과를 실어주기
+   2. reject에서는 예외를 실어주기
