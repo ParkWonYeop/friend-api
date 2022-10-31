@@ -1,6 +1,6 @@
 const {MainDao} = require(`../Dao/mainDao`);
 const {FriendDto} = require(`../Dto/friendDto`);
-const {UserDto} = require(`../Dto/userDto`)
+const {UserDto} = require(`../Dto/userDto`);
 const logger = require(`../config/winston`);
 const {friendStatus,errorCode} = require(`../config/etcConfig`);
 
