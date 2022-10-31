@@ -111,7 +111,7 @@ class MainDao{
             this.#connection.query(this.#query, function(error,result){
                 if(error) {reject(errorCode.dbError);}
                 if(result.length === 0) {reject(errorCode.noResult);}
-                resolve(result[0].id);
+                else{resolve(result[0].id)};
             })
         })
     }
@@ -127,7 +127,7 @@ class MainDao{
             this.#connection.query(this.#query, function(error,result){
                 if(error) {reject(errorCode.dbError);}
                 if(result.length === 0) {reject(errorCode.noResult);}
-                resolve(result[0].email);
+                else{resolve(result[0].email)};
             })
         })
     }
@@ -142,7 +142,7 @@ class MainDao{
             this.#connection.query(this.#query, function(error,result){
                 if(error) {reject(errorCode.dbError);}
                 if(result.length === 0) {reject(errorCode.noResult);}
-                resolve(result[0].email);
+                else{resolve(result[0].email)};
             })
         })
     }
