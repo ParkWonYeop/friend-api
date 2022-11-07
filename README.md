@@ -1,5 +1,5 @@
-2022.10.24
+2022.11.07
 
-1. resolve, reject 를 적극 활용하는 방법으로 리팩토링
-   1. resolve엔 처리 결과를 실어주기
-   2. reject에서는 예외를 실어주기
+1. nest.js framework 스터디
+2. typeScript 스터디
+3. controller에서 response 하도록 리팩토링
