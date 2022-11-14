@@ -6,59 +6,52 @@ const {errorCode} = require(`../config/etcConfig`);
 class UserService{
     #request;
     #response;
+    #mainDao;
 
     //생성자
     constructor(request,response){
         this.#request = request;
         this.#response = response;
+        this.#mainDao = new MainDao();
     }
 
     async login(){
-        const mainDao = new MainDao();
         const userDto = new UserDto(this.#request.body);
 
         try{
-            const isDeleted = await mainDao.login(userDto)
+            const isDeleted = await this.#mainDao.login(userDto)
 
             if(isDeleted === errorCode.isDeleted){
-                logger.info("login is_deleted");
-                return this.#response.send("is_deleted");
+                return "Is deleted";
             }
 
-            logger.info("login success");
-            return this.#response.send("success");
+            return "Success";
         }
         catch(error){
             if(error === errorCode.noResult){
-                logger.error("login noResult");
-                return this.#response.send("noResult");
+                throw "NoResult";
             }
             if(error === errorCode.dbError){
-                logger.error("login dbError");
-                return this.#response.sendStatus(500);
+                throw "DatabaseError";
             }
         }
     }
 
     async signup(){
-        const mainDao = new MainDao();
         const userDto = new UserDto(this.#request.body);
         
         try{
-            await mainDao.checkAlreadySignup(userDto)
-            await mainDao.addUser(userDto)
+            await this.#mainDao.checkAlreadySignup(userDto)
+            await this.#mainDao.addUser(userDto)
 
-            logger.info("signup success");
-            return this.#response.send("success");
+            return "Success";
         }
         catch(error){
             if(error === errorCode.dbError){
-                logger.error("signup dbError");
-                return this.#response.sendStatus(500);
+                throw "DatabaseError";
             }
             if(error !== errorCode.noResult){
-                logger.error("signup already signup");
-                return this.#response.send("you are already user")
+                throw "You are already user";
             }
         }       
     }

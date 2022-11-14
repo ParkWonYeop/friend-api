@@ -1,95 +1,81 @@
 const {MainDao} = require(`../Dao/mainDao`);
 const {FriendDto} = require(`../Dto/friendDto`);
-const {UserDto} = require(`../Dto/userDto`);
-const logger = require(`../config/winston`);
 const {friendStatus,errorCode} = require(`../config/etcConfig`);
 
 class FriendService{
     #request;
     #response;
+    #mainDao;
 
     //생성자
     constructor(request,response){
         this.#request = request;
         this.#response = response;
+        this.#mainDao = new MainDao();
     }
 
     async requestFriend(){
-        const mainDao = new MainDao();
         const friendDto = new FriendDto(this.#request.body);
         
         try{
-            const status = await mainDao.checkFriendRequest(friendDto);
+            const status = await this.#mainDao.checkFriendRequest(friendDto);
 
             if(status = friendStatus.accept){
-                logger.info('requestFriend success');
-                return this.#response.send("you are already friends");
+                return "You are already friends";
             }
             if(status = friendStatus.request){
-                await mainDao.acceptFriend(friendDto);
-                logger.info('requestFriend checkFriend success');
-                return this.#response.send("success");
+                await this.#mainDao.acceptFriend(friendDto);
+                return "Success";
             }
 
-            await mainDao.requestFriend(friendDto);
-            mainDao.disconnectDatabase();
+            await this.#mainDao.requestFriend(friendDto);
 
-            logger.info('requestFriend success');
-            return this.#response.send("success");
+            return "Success";
         }
         catch(error){
             if(error === errorCode.dbError){
-                logger.error('requestFriend dbError');
-                return this.#response.sendStatus(500);
+                throw "DatabaseError";
             }
             if(error === errorCode.noResult){
-                logger.error("requesterFriend noResult");
-                return this.#response.sendStatus(500);
+                throw "NoResult";
             }
         }
     }
 
     async acceptFriend(){
-        const mainDao = new MainDao();
         const friendDto = new FriendDto(this.#request.body);
 
         try{
-            await mainDao.acceptFriend(friendDto);
-            logger.info("acceptFreind success");
-            return this.#response.send("success");
+            await this.#mainDao.acceptFriend(friendDto);
+            return "Success";
         }
         catch(error){
             if (error === errorCode.dbError){
-                logger.error("acceptFriend dbError");
-                return this.#response.sendStatus(500);
+                throw "DatabaseError";
             }
         }   
     }
 
     async deleteFriend(){
-        const mainDao = new MainDao();
         const friendDto = new FriendDto(this.#request.body);
 
         try{
-            await mainDao.deleteFriend(friendDto);
+            await this.#mainDao.deleteFriend(friendDto);
 
-            logger.info("refuseFreind success");
-            return this.#response.send("success");
+            return "Success";
         }
         catch(error){
             if (error === errorCode.dbError){
-                logger.error("refuseFriend dbError");
-                return this.#response.sendStatus(500);
+                throw "DatabaseError";
             }
         }
     }
 
     async friendList(){
-        const mainDao = new MainDao();
         const friendDto = new FriendDto(this.#request.params);
 
         try{
-            const friendListId = await mainDao.friendList(friendDto);
+            const friendListId = await this.#mainDao.friendList(friendDto);
 
             const friendList = [];
 
@@ -97,9 +83,9 @@ class FriendService{
                 friendDto.setRequester(friend.requester);
                 friendDto.setAccepter(friend.accepter);
     
-                const requester = await mainDao.getRequesterEmail(friendDto);
+                const requester = await this.#mainDao.getRequesterEmail(friendDto);
 
-                const accepter = await mainDao.getAccepterEmail(friendDto);
+                const accepter = await this.#mainDao.getAccepterEmail(friendDto);
     
                 friendList.push({
                     requester : requester,
@@ -109,89 +95,77 @@ class FriendService{
                 })
             }
 
-            logger.info('friendList success');
-            return this.#response.send(friendList);
+            return friendList;
         }
         catch(error){
             if(error === errorCode.dbError){
-                logger.error('friendList dbError');
-                return this.#response.sendStatus(500);
+                throw "DatabaseError";
             }
             if(error === errorCode.noResult){
-                logger.error('friendList noResult');
-                return this.#response.send("noResult");
+                throw "NoResult";
             }
         }
     }
 
     async blockFriend(){
-        const mainDao = new MainDao();
         const friendDto = new FriendDto(this.#request.body);
 
         try{
-            await mainDao.checkBlock(friendDto);
+            await this.#mainDao.checkBlock(friendDto);
 
-            const friend = await mainDao.checkFriendRequest(friendDto);
+            const friend = await this.#mainDao.checkFriendRequest(friendDto);
 
             if(friend !== errorCode.noResult){
-                await mainDao.deleteFriend(friendDto);
+                await this.#mainDao.deleteFriend(friendDto);
             }
 
-            await mainDao.block(friendDto);
+            await this.#mainDao.block(friendDto);
 
-            logger.info("blockFreind success");
-            return this.#response.send("success");
+            return "Success";
         }
         catch(error){
             if(error === errorCode.dbError){
-                logger.error("blockFriend dbError");
-                return this.#response.sendStatus(500);
+                throw "DatabaseError"
             }
     
             if(error === errorCode.noError){
-                logger.info("blockFriend already block");
-                return this.#response.send("already block")
+                throw "You are already block"
             }
         }
     }
 
     async deleteBlock(){
-        const mainDao = new MainDao();
         const friendDto = new FriendDto(this.#request.body);
 
         try{
-            await mainDao.deleteBlock(friendDto);
+            await this.#mainDao.deleteBlock(friendDto);
 
-            logger.info("deleteBlock success");
-            return this.#response.send("success");
+            return "Success";
         }
         catch(error){
             if(error === errorCode.dbError){
-                logger.error("deleteBlock dberror");
-                return this.#response.sendStatus(500);
+                throw "DatabaseError"
             }
             if(error === errorCode.noResult){
-                logger.error("deleteBlock noResult");
-                return this.#response.sendStatus(500);
+                throw "NoResult"
             }
         }
     }
 
     async blockList(){
-        const mainDao = new MainDao();
         const friendDto = new FriendDto(this.#request.params);
 
         try{
-            const blockListId = await mainDao.blockList(friendDto);
+            const blockListId = await this.#mainDao.blockList(friendDto);
             const blockList = []
 
             for (let block of blockListId){
                 friendDto.setRequester(block.requester);
                 friendDto.setAccepter(block.blocked_user);
     
-                const requester = await mainDao.getRequesterEmail(friendDto);
+                const requester = await this.#mainDao.getRequesterEmail(friendDto);
     
-                const blockedUser = await mainDao.getAccepterEmail(friendDto);
+                const blockedUser = await this.#mainDao.getAccepterEmail(friendDto);
     
                 blockList.push({
                     requester : requester,
@@ -200,17 +174,14 @@ class FriendService{
                 })
             }
 
-            logger.info("BlockList success")
-            return this.#response.send(blockList);
+            return blockList;
         }
         catch(error){
             if(error === errorCode.dbError){
-                logger.error("blockList dberror");
-                return this.#response.sendStatus(500);
+                throw "DatabaseError"
             }
             if(error === errorCode.noResult){
-                logger.error("blockList noResult");
-                return this.#response.send("noResult");
+                throw "NoResult"
             }
         }
     }
